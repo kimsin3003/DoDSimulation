@@ -28,7 +28,7 @@ void ADoor::Tick(float DeltaTime)
 	for (const AMover* mover : TActorRange<AMover>(GetWorld()))
 	{
 		auto moverLocation = mover->GetActorLocation();
-		if (FVector::Distance(doorLocation, moverLocation) <= 180)
+		if (FVector::Distance(doorLocation, moverLocation) <= 100)
 		{
 			_IsOpen = true;
 			return;

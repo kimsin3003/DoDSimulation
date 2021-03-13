@@ -2,6 +2,7 @@
 
 
 #include "Mover.h"
+#include "Math/UnrealMathUtility.h"
 
 // Sets default values for this component's properties
 AMover::AMover()
@@ -30,6 +31,6 @@ void AMover::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	UE_LOG(LogTemp, Log, TEXT("Log Message"));
 	const auto& location = GetActorLocation();
-	SetActorLocation(location + FVector(100 * DeltaTime, 0, 0));
+	SetActorLocation(location + 100 * DeltaTime * FVector(FMath::RandRange(-1.0f, 1.0f), FMath::RandRange(-1.0f, 1.0f), FMath::RandRange(-1.0f, 1.0f)));
 }
 
