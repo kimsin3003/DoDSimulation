@@ -11,16 +11,28 @@
 class UWorld;
 class AActor;
 
+template<typename... CompType>
 struct DataUnit
 {
 	int64_t EntityId = -1;
-	TArray<Component> Comps;
+	TTuple<CompType...> Comps;
 };
 
-struct ArcheType
+
+struct IArcheType
 {
 	TSet<FString> Key;
-	TArray<DataUnit>* Datas = new TArray<DataUnit>();
+	void* Datas = nullptr;
+
+
+}
+
+template<typename... CompType>
+struct ArcheType
+{
+	ArcheType() {
+		Datas = new TArray<DataUnit<CompType...>>();
+	}
 };
 
 class Database
@@ -46,10 +58,10 @@ public:
 // 		return result;
 // 	}
 
-	const TArray<ArcheType*>& GetArcheTypes() const { return _archeTypes; }
+	const TArray<IArcheType*>& GetArcheTypes() const { return _archeTypes; }
 
 private:
 	UWorld* _world = nullptr;
 	int64_t _nextEntity = 0;
-	TArray<ArcheType*> _archeTypes;
+	TArray<IArcheType*> _archeTypes;
 };
