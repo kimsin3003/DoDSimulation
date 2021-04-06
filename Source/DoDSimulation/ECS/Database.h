@@ -11,28 +11,59 @@
 class UWorld;
 class AActor;
 
-template<typename... CompType>
-struct DataUnit
+
+
+class EntityPool
 {
-	int64_t EntityId = -1;
-	TTuple<CompType...> Comps;
+	TArray<int64_t> EntityId;
 };
 
-
-struct IArcheType
+template<typename CompType>
+class ComponentPool : public EntityPool
 {
-	TSet<FString> Key;
-	void* Datas = nullptr;
+	TArray<CompType> Comps;
+};
 
+class PoolData
+{
+	FString TypeId;
+	EntityPool* Pool;
+};
 
-}
-
-template<typename... CompType>
 struct ArcheType
 {
-	ArcheType() {
-		Datas = new TArray<DataUnit<CompType...>>();
+	TSet<FString> Key;
+
+	template<typename... CompType>
+	void Create()
+	{
+		PoolDatas.Add(new ComponentPool<CompType>())...;
+		Key = { typeid(CompType).name()... };
 	}
+
+	template<typename CompType>
+	const ComponentPool<CompType>* GetPool() const
+	{
+		FString TypeToFind = typeid(CompType).name();
+		assert(Key.Contains(TypeToFind));
+		for (auto Data : PoolDatas)
+		{
+			if (Data->TypeId == TypeToFind)
+				return static_cast<ComponentPool<CompType>*>(Data->Pool);
+		}
+		return nullptr;
+	}
+
+	~ArcheType()
+	{
+		for (auto Data : PoolDatas)
+		{
+			delete Data;
+		}
+	}
+
+
+	TArray<PoolData*> PoolDatas;
 };
 
 class Database
@@ -41,27 +72,21 @@ public:
 	Database(UWorld* world);
 	int AddActor(AActor* actor);
 
-//	template<typename... ComponentType>
-// 	TArray<TTuple<ComponentType...>> ForEach() const
-// 	{
-// 		TArray<DataUnit*> result;
-// 		TSet<FString> types = { (typeid(ComponentType).name())... };
-// 
-// 		TArray<TSet<FString>> keys;
-// 		_data.GetKeys(keys);
-// 		for (auto archeType : _archeTypes)
-// 		{
-// 			if(archeType.Key.Includes(types))
-// 				result.Append(archeType.Datas);
-// 		}
-// 
-// 		return result;
-// 	}
-
-	const TArray<IArcheType*>& GetArcheTypes() const { return _archeTypes; }
+	template<typename... CompType>
+	TArray<ArcheType*> GetPool()
+	{
+		TArray<ArcheType*> MatchingArcheTypes;
+		TSet KeyToFind = { typeid(CompType).name()... };
+		for (auto& ArcheType : ArcheTypes)
+		{
+			if (ArcheType.Key.Contains(KeyToFind))
+				MatchingArcheTypes.Add(&ArcheType);
+		}
+		return MatchingArcheTypes;
+	}
 
 private:
 	UWorld* _world = nullptr;
 	int64_t _nextEntity = 0;
-	TArray<IArcheType*> _archeTypes;
+	TArray<ArcheType*> ArcheTypes;
 };
