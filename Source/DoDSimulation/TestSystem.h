@@ -5,11 +5,11 @@
 #include "Mover.h"
 #include "Door.h"
 
-class TestSystem : SystemBase
+class TestSystem : public SystemBase
 {
 public:
-	virtual void Update(const Scheduler& scheduler) override;
+	virtual void Update(float deltaTime, const Scheduler& scheduler) override;
 
-	Query<AMover&, const ADoor&> _query;
+	Query<AMover&, ADoor&> Query;
 };
 

@@ -2,11 +2,12 @@
 #include <functional>
 #include <stdio.h>
 
-void TestSystem::Update(const Scheduler& scheduler)
+void TestSystem::Update(float deltaTime, const Scheduler& scheduler)
 {
-	_query.Each(*scheduler.DB, [](AMover& mover, const ADoor& door)
+	Query.Each(*(scheduler.DB), [deltaTime](int32 EntityId, AMover& mover, ADoor& door)
 	{
-		printf("fuck");
+		mover.Tick(deltaTime);
+		door.Tick(deltaTime);
 	});
 }
 

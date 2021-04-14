@@ -5,6 +5,6 @@ class SystemBase
 {
 public:
 	virtual ~SystemBase() {}
-	virtual void Update(const Scheduler& scheduler) = 0;
+	virtual void Update(float deltaTime, const Scheduler& scheduler) = 0;
 };
 

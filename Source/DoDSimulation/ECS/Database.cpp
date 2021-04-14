@@ -14,11 +14,9 @@ int Database::AddActor(AActor* actor)
 
 	for (auto comp : compSet)
 	{
-// 		FName compName = comp->StaticClass()->GetFName();
-// 		DataUnit* data = new DataUnit();
-// 		data->EntityId = entityId;
-// 		data->Comp = comp;
-// 		_data[compName.ToString()].Add(data);
+		auto NewArcheType = new ArcheType();
+//		NewArcheType->Create();
+		ArcheTypes.Add(new ArcheType());
 	}
 
 	return entityId;

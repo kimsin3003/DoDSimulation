@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include "Components/ActorComponent.h"
 #include "Containers/UnrealString.h"
-#include "Templates/Tuple.h"
+#include "Containers/Set.h"
 #include "UObject/Object.h"
 #include "Component.h"
 
@@ -11,41 +11,41 @@
 class UWorld;
 class AActor;
 
-
-
-class EntityPool
+struct IComponentPool
 {
-	TArray<int64_t> EntityId;
 };
 
 template<typename CompType>
-class ComponentPool : public EntityPool
+struct ComponentPool : public IComponentPool
 {
 	TArray<CompType> Comps;
 };
 
-class PoolData
+struct PoolData
 {
 	FString TypeId;
-	EntityPool* Pool;
+	IComponentPool* Pool;
 };
 
-struct ArcheType
+class ArcheType
 {
-	TSet<FString> Key;
-
+public:
 	template<typename... CompType>
 	void Create()
 	{
 		PoolDatas.Add(new ComponentPool<CompType>())...;
-		Key = { typeid(CompType).name()... };
+		Keys = { typeid(CompType).name()... };
 	}
 
+
+
+	const TArray<int64_t>& GetEntityList() { return EntityIds; }
+
 	template<typename CompType>
-	const ComponentPool<CompType>* GetPool() const
+	ComponentPool<CompType>* GetPool() const
 	{
 		FString TypeToFind = typeid(CompType).name();
-		assert(Key.Contains(TypeToFind));
+		check(Keys.Contains(TypeToFind));
 		for (auto Data : PoolDatas)
 		{
 			if (Data->TypeId == TypeToFind)
@@ -62,8 +62,10 @@ struct ArcheType
 		}
 	}
 
-
+	TSet<FString> Keys;
+private:
 	TArray<PoolData*> PoolDatas;
+	TArray<int64_t> EntityIds;
 };
 
 class Database
@@ -73,14 +75,14 @@ public:
 	int AddActor(AActor* actor);
 
 	template<typename... CompType>
-	TArray<ArcheType*> GetPool()
+	TArray<ArcheType*> GetArcheTypes() const
 	{
 		TArray<ArcheType*> MatchingArcheTypes;
-		TSet KeyToFind = { typeid(CompType).name()... };
-		for (auto& ArcheType : ArcheTypes)
+		TSet<FString> KeyToFind = { typeid(CompType).name()... };
+		for (auto ArcheType : ArcheTypes)
 		{
-			if (ArcheType.Key.Contains(KeyToFind))
-				MatchingArcheTypes.Add(&ArcheType);
+			if (ArcheType->Keys.Includes(KeyToFind))
+				MatchingArcheTypes.Add(ArcheType);
 		}
 		return MatchingArcheTypes;
 	}

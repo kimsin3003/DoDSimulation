@@ -23,16 +23,6 @@ USpawner::USpawner()
 void USpawner::BeginPlay()
 {
 	Super::BeginPlay();
-
-    int size = 10;
-    for (int i = 0; i < size; i++)
-    {
-        for (int j = 0; j < size; j++)
-        {
-            GetWorld()->SpawnActor<AActor>(Mover, 100 * FVector(i - size/ 2, j - size / 2, 0), FRotator(0,0,0));
-            GetWorld()->SpawnActor<AActor>(Door, 100 * FVector(i - size / 2, j - size / 2, 0), FRotator(0, 0, 0));
-        }
-    }
 }
 
 

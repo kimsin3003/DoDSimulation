@@ -4,28 +4,30 @@
 #include <functional>
 #include <typeinfo>
 #include "Database.h"
-#include "../EnTT/entt.hpp"
+#include "Templates/Tuple.h"
+#include "Templates/RemoveReference.h"
+#include "Templates/RemoveCV.h"
 
-template<typename... ComponentType>
+template<typename... CompType>
 class Query
 {
 public:
-	void Each(const Database& database, const TFunction<void(ComponentType...)>& func) const
-	{
-		entt::registry registry;
-		auto view = registry.view<const position, velocity>();
-		view.each([](const auto& pos, auto& vel) { /* ... */ });
-		TSet<FString> types = { (typeid(ComponentType).name())... };
+	template<typename PoolCompType>
+	using CompPoolType = ComponentPool<typename TRemoveReference<PoolCompType>::Type>*;
 
-		const TArray<ArcheType*>& archeTypes = database.GetArcheTypes();
-		for (ArcheType* archeType : archeTypes)
+	template <typename FuncType>
+	void Each(const Database& Database, FuncType Func)
+	{
+		TArray<ArcheType*> ArcheTypes = Database.GetArcheTypes();
+		for (ArcheType* ArcheType : ArcheTypes)
 		{
-			if (archeType->Key.Includes(types))
+			const TArray<int64_t> EntityOrder = ArcheType->GetEntityList();
+			auto Pools = MakeTuple<CompPoolType<CompType> ...>( ArcheType->GetPool<typename TRemoveReference<CompType>::Type>()... );
+
+			for (int64_t Index = 0; Index < EntityOrder.Num(); Index++)
 			{
-				for (DataUnit& data : archeType->Datas)
-				{
-					func(data.Comps ...);
-				}
+				int32 EntityId = EntityOrder[Index];
+				Func(EntityId, Pools.Get<CompPoolType<CompType>>()->Comps[Index] ...);
 			}
 		}
 	}

@@ -11,10 +11,6 @@ UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DODSIMULATION_API USpawner : public UActorComponent
 {
 	GENERATED_BODY()
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<AActor> Mover;
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<AActor> Door;
 
 public:	
 	// Sets default values for this component's properties
