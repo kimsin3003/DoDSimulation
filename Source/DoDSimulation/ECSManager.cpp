@@ -17,7 +17,7 @@ AECSManager::AECSManager()
 void AECSManager::BeginPlay()
 {
 	Super::BeginPlay();
-	Scheduler.DB = new Database(GetWorld());
+	Scheduler.DB = new Database();
 	Systems.Add(new TestSystem());
 
 	int size = 10;
@@ -27,9 +27,6 @@ void AECSManager::BeginPlay()
 		{
 			AActor* M = GetWorld()->SpawnActor<AActor>(Mover, 100 * FVector(i - size / 2, j - size / 2, 0), FRotator(0, 0, 0));
 			AActor* D = GetWorld()->SpawnActor<AActor>(Door, 100 * FVector(i - size / 2, j - size / 2, 0), FRotator(0, 0, 0));
-		
-			Scheduler.DB->AddActor(M);
-			Scheduler.DB->AddActor(D);
 		}
 	}
 }

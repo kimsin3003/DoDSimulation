@@ -30,7 +30,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	Scheduler Scheduler;
 private:
 	TArray<class SystemBase*> Systems;
-	Scheduler Scheduler;
 };
