@@ -39,6 +39,7 @@ struct ComponentPool : public IComponentPool
 
 	void MoveTo(int32 Index, IComponentPool* To) final
 	{
+		check(Comps.Num()-1 >= Index);
 		ComponentPool<CompType>* RealTo = static_cast<ComponentPool<CompType>*>(To);
 		RealTo->Comps.Add(MoveTemp(Comps[Index]));
 		Comps[Index] = Comps[Comps.Num() - 1];
@@ -89,14 +90,18 @@ public:
 	{
 		FString TypeToFind = TypeToTypeId<CompType>();
 		check(TypeIdToPool.Contains(TypeToFind));
-		return static_cast<ComponentPool<CompType>*>(TypeIdToPool[TypeToFind]->Pool);
+		auto Pool = static_cast<ComponentPool<CompType>*>(TypeIdToPool[TypeToFind]->Pool);
+		if (EntityIds.Num() != Pool->Comps.Num())
+			printf("asdf");
+		return Pool;
 	}
 
 	template<typename CompType>
-	CompType& GetComp(int32 EntityId)
+	CompType* GetComp(int32 EntityId) const
 	{
 		int32 Index = EnitityIdToIndex[EntityId];
-		return GetPool<CompType>()->Comps[Index];
+		ComponentPool<CompType>* Pool = GetPool<CompType>();
+		return &(Pool->Comps[Index]);
 	}
 
 	template<typename... CompType>
@@ -117,10 +122,10 @@ public:
 			FString TypeId = Pair.Key;
 			PoolData* Data = Original->TypeIdToPool[TypeId];
 			PoolData* NewData = Data->CreateEmptyClone();
-			New->TypeIdToPool[TypeId] = NewData;
+			New->TypeIdToPool.Add(TypeId, NewData);
 		}
 		FString NewCompTypeId = TypeToTypeId<NewCompType>();
-		New->TypeIdToPool[NewCompTypeId] = PoolData::Create<NewCompType>();
+		New->TypeIdToPool.Add(NewCompTypeId, PoolData::Create<NewCompType>());
 		TSet<FString> NewKey = { NewCompTypeId };
 		NewKey.Append(Original->TypeIds);
 		New->TypeIds = NewKey;
@@ -128,43 +133,34 @@ public:
 	}
 
 	template<typename NewCompType>
-	void Add(int32 EntityId, NewCompType&& Comp)
+	void AddComp(int32 EntityId, NewCompType&& Comp)
 	{
-		int32 Index = EntityIds.Add(EntityId);
-		EnitityIdToIndex.Add(EntityId, Index);
-		GetPool<NewCompType>()->Comps.Push(MoveTemp(Comp));
+		if (!EntityIds.Contains(EntityId))
+			AddEntity(EntityId);
+		auto& Comps = GetPool<NewCompType>()->Comps;
+		check(Comps.Num() == EnitityIdToIndex[EntityId]);
+		Comps.Push(MoveTemp(Comp));
+		if (Comps.Num() != EntityIds.Num())
+			printf("asdf");
 	}
-
-	void MoveToSmaller(ArcheType* To, int32 EntityId)
-	{
-		int32 IndexToMove = EnitityIdToIndex[EntityId];
-		EntityIds[IndexToMove] = EntityIds[EntityIds.Num() - 1];
-		EntityIds.RemoveAt(EntityIds.Num() - 1);
-		EnitityIdToIndex.Remove(EntityId);
-
-		To->EntityIds.Add(EntityId);
-		for (auto& Pair : TypeIdToPool)
-		{
-			FString TypeId = Pair.Key;
-			PoolData* From = Pair.Value;
-			From->MoveTo(IndexToMove, To->TypeIdToPool[TypeId]);
-		}
-	}
+	void MoveToSmaller(ArcheType* To, int32 EntityId);
 
 	template<typename CompType>
 	void MoveToBigger(ArcheType* To, int32 EntityId, CompType&& Comp)
 	{
 		MoveToSmaller(To, EntityId);
-		To->GetPool<CompType>()->Comps.Push(MoveTemp(Comp));
+		To->AddComp(EntityId, MoveTemp(Comp));
+		if (To->GetPool<CompType>()->Comps.Num() != To->EntityIds.Num())
+			printf("asdf");
 	}
 
-	~ArcheType()
-	{
-		for (auto& Pair : TypeIdToPool)
-		{
-			delete Pair.Value;
-		}
-	}
+	~ArcheType();
+private:
+
+	void AddEntity(int32 EntityId);
+	void RemoveEntity(int32 IndexToMove, int32 EntityId);
+
+public:
 	TSet<FString> TypeIds;
 private:
 	TArray<int32> EntityIds;
@@ -182,38 +178,38 @@ public:
 	{
 		typedef typename TRemoveReference<CompType>::Type T;
 		FString TypeId = TypeToTypeId<T>();
-		ArcheType* Container = nullptr;
 		if (EntityToArcheType.Contains(EntityId))
 		{
-			Container = EntityToArcheType[EntityId];
+			ArcheType* Container = EntityToArcheType[EntityId];
 			TSet<FString> BiggerKey = { TypeId };
 			BiggerKey.Append(Container->TypeIds);
 			ArcheType* BiggerContainer = GetExactArcheType(BiggerKey);
 			if (BiggerContainer == nullptr)
+			{
 				BiggerContainer = ArcheType::CreateExtension<T>(Container);
+				ArcheTypes.Add(BiggerContainer);
+			}
 			Container->MoveToBigger<T>(BiggerContainer, EntityId, MoveTemp(Comp));
 			EntityToArcheType[EntityId] = BiggerContainer;
-
-			ArcheTypes.Add(BiggerContainer);
-			if (Container->IsEmpty())
-			{
-				ArcheTypes.Remove(Container);
-				delete Container;
-			}
 		}
 		else
 		{
-			Container = ArcheType::Create<T>();
-			Container->Add(EntityId, MoveTemp(Comp));
+			ArcheType* Container = GetExactArcheType(TSet<FString>{ TypeId });
+			if (Container == nullptr)
+			{
+				Container = ArcheType::Create<T>();
+				ArcheTypes.Add(Container);
+			}
+			Container->AddComp(EntityId, MoveTemp(Comp));
 			EntityToArcheType.Add(EntityId, Container);
 		}
 	}
 
 	template<typename CompType>
-	CompType& GetComp(int32 EnitityId)
+	CompType* GetComp(int32 EntityId) const
 	{
 		check(EntityToArcheType.Contains(EntityId));
-		EntityToArcheType[EntityId]->GetComp(EntityId);
+		return EntityToArcheType[EntityId]->GetComp<CompType>(EntityId);
 	}
 	
 
@@ -221,7 +217,8 @@ public:
 	{
 		for (auto ArcheType : ArcheTypes)
 		{
-			if (ArcheType->TypeIds.Difference(Key).Num() == 0)
+			if (ArcheType->TypeIds.Difference(Key).Num() == 0
+				&& Key.Difference(ArcheType->TypeIds).Num() == 0)
 				return ArcheType;
 		}
 		return nullptr;
@@ -235,7 +232,7 @@ public:
 		TSet<FString> KeySetToExclude = { TypeToTypeId<ExcludeType>()... };
 		for (auto ArcheType : ArcheTypes)
 		{
-			if (ArcheType->TypeIds.Includes(KeySetToInclude) && ArcheType->TypeIds.Intersect(KeySetToInclude).Num() == 0)
+			if (ArcheType->TypeIds.Includes(KeySetToInclude) && ArcheType->TypeIds.Intersect(KeySetToExclude).Num() == 0)
 				MatchingArcheTypes.Add(ArcheType);
 		}
 		return MatchingArcheTypes;

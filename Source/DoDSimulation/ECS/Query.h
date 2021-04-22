@@ -49,13 +49,12 @@ public:
 		TArray<ArcheType*> ArcheTypes = Database.GetArcheTypes<CompType...>(TExclude<ExcludeType...>());
 		for (ArcheType* ArcheType : ArcheTypes)
 		{
-			const TArray<int32> EntityOrder = ArcheType->GetEntityList();
-			auto Pools = MakeTuple<CompPoolType<CompType> ...>(ArcheType->GetPool<CompType>()...);
+			TArray<int32> EntityOrder = ArcheType->GetEntityList();
 
 			for (int32 Index = 0; Index < EntityOrder.Num(); Index++)
 			{
 				int32 EntityId = EntityOrder[Index];
-				Func(EntityId, Pools.Get<CompPoolType<CompType>>()->Comps[Index] ...);
+				Func(EntityId, *Database.GetComp<CompType>(EntityId) ...);
 			}
 		}
 	}

@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "ECSBaseComponents.h"
 
+#pragma optimize( "", off )
 void TestSystem::Update(float deltaTime, const Scheduler& scheduler)
 {
 	Database* DB = scheduler.DB;
@@ -21,7 +22,7 @@ void TestSystem::Update(float deltaTime, const Scheduler& scheduler)
 
 		const auto& location = Transform.transform.GetLocation();
 		FVector NewPos = { location + 100 * deltaTime * FVector(FMath::RandRange(-1.0f, 1.0f), FMath::RandRange(-1.0f, 1.0f), FMath::RandRange(-1.0f, 1.0f)) };
-		Transform.transform.TransformPosition(NewPos);
+		Transform.transform.SetLocation(NewPos);
 	});
 
 	Query<FCopyTransformToActor, FActorReference, FActorTransform> ToCopyTransformToActor;
@@ -30,4 +31,5 @@ void TestSystem::Update(float deltaTime, const Scheduler& scheduler)
 		v.Ptr->SetActorTransform(Transform.transform);
 	});
 }
+#pragma optimize( "", on )
 
