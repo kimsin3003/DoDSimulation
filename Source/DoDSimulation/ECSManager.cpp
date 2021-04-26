@@ -19,22 +19,13 @@ void AECSManager::BeginPlay()
 	Super::BeginPlay();
 	Scheduler.DB = new Database();
 	Systems.Add(new TestSystem());
-
-	int size = 10;
-	for (int i = 0; i < size; i++)
-	{
-		for (int j = 0; j < size; j++)
-		{
-			AActor* M = GetWorld()->SpawnActor<AActor>(Mover, 100 * FVector(i - size / 2, j - size / 2, 0), FRotator(0, 0, 0));
-			AActor* D = GetWorld()->SpawnActor<AActor>(Door, 100 * FVector(i - size / 2, j - size / 2, 0), FRotator(0, 0, 0));
-		}
-	}
 }
 
 // Called every frame
 void AECSManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (!NeedUpdate) return;
 
 	for (auto& system : Systems)
 	{

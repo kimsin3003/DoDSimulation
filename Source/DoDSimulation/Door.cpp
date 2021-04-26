@@ -9,7 +9,7 @@
 ADoor::ADoor()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 }
 
@@ -23,6 +23,7 @@ void ADoor::BeginPlay()
 void ADoor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (!NeedUpdate) return;
 	auto doorLocation = GetActorLocation();
 	_IsOpen = false;
 	for (const AMover* mover : TActorRange<AMover>(GetWorld()))

@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include "Spawner.h"
-#include "Mover.h"
 #include "ECS/Scheduler.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -14,10 +12,7 @@ class DODSIMULATION_API AECSManager : public AActor
 {
 	GENERATED_BODY()
 		UPROPERTY(EditAnywhere)
-		TSubclassOf<AActor> Mover;
-	UPROPERTY(EditAnywhere)
-		TSubclassOf<AActor> Door;
-	
+		bool NeedUpdate;
 public:	
 	// Sets default values for this actor's properties
 	AECSManager();
