@@ -4,12 +4,26 @@
 
 #include "CoreMinimal.h"
 #include "ComponentWrapper.h"
+#include "ECS/Database.h"
 #include "ECSBaseComponents.generated.h"
-
 
 /**
  * 
  */
+
+USTRUCT(BlueprintType)
+struct FDoorComp {
+	GENERATED_BODY()
+		FDoorComp() {}
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		bool IsOpen = false;
+};
+USTRUCT(BlueprintType)
+struct FMoverComp {
+	GENERATED_BODY()
+		FMoverComp() {}
+};
 
 USTRUCT(BlueprintType)
 struct FActorReference {
@@ -59,7 +73,7 @@ enum class ETransformSyncType : uint8 {
 };
 
 UCLASS(ClassGroup = (ECS), meta = (BlueprintSpawnableComponent))
-class DODSIMULATION_API UECSLinker : public UActorComponent
+class UECSLinker : public UActorComponent
 {
 	GENERATED_BODY()
 
@@ -81,4 +95,38 @@ protected:
 		FCopyTransformToECS CopyToECS;
 	class AECSManager* ECSManager = nullptr;
 
+};
+
+UCLASS(ClassGroup = (ECS), meta = (BlueprintSpawnableComponent))
+class UDoorWrapper : public UActorComponent, public IComponentWrapper
+{
+	GENERATED_BODY()
+
+public:
+	// Sets default values for this component's properties
+	UDoorWrapper() { PrimaryComponentTick.bCanEverTick = false; };
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FDoorComp Value;
+protected:
+	void AddToEntity(Database* DB, int32 EntityId) final
+	{
+		DB->AddComp(EntityId, Value);
+	}
+};
+
+UCLASS(ClassGroup = (ECS), meta = (BlueprintSpawnableComponent))
+class UMoverWrapper : public UActorComponent, public IComponentWrapper
+{
+	GENERATED_BODY()
+
+public:
+	// Sets default values for this component's properties
+	UMoverWrapper() { PrimaryComponentTick.bCanEverTick = false; };
+
+protected:
+	void AddToEntity(Database* DB, int32 EntityId) final
+	{
+		DB->AddComp(EntityId, FMoverComp());
+	}
 };

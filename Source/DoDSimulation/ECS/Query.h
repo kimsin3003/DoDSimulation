@@ -54,7 +54,8 @@ public:
 			for (int32 Index = 0; Index < EntityOrder.Num(); Index++)
 			{
 				int32 EntityId = EntityOrder[Index];
-				Func(EntityId, *Database.GetComp<CompType>(EntityId) ...);
+				if (Func(EntityId, *Database.GetComp<CompType>(EntityId) ...) == false)
+					return;
 			}
 		}
 	}
