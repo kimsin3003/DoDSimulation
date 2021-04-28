@@ -34,14 +34,6 @@ struct FActorReference {
 
 };
 USTRUCT(BlueprintType)
-struct FCopyTransformToECS {
-	GENERATED_BODY()
-		FCopyTransformToECS() : bWorldSpace(true) {};
-
-	UPROPERTY(EditAnywhere, Category = ECS)
-		bool bWorldSpace;
-};
-USTRUCT(BlueprintType)
 struct FActorTransform {
 	GENERATED_BODY()
 		FActorTransform() {};
@@ -51,17 +43,13 @@ struct FActorTransform {
 		FTransform transform;
 };
 USTRUCT(BlueprintType)
+struct FCopyTransformToECS {
+	GENERATED_BODY()
+};
+USTRUCT(BlueprintType)
 struct FCopyTransformToActor {
 	GENERATED_BODY()
-
-		FCopyTransformToActor() : bWorldSpace(true), bSweep(false) {};
-
-	UPROPERTY(EditAnywhere, Category = ECS)
-		bool bWorldSpace;
-	UPROPERTY(EditAnywhere, Category = ECS)
-		bool bSweep;
 };
-
 
 UENUM(BlueprintType)
 enum class ETransformSyncType : uint8 {
@@ -73,11 +61,11 @@ enum class ETransformSyncType : uint8 {
 };
 
 UCLASS(ClassGroup = (ECS), meta = (BlueprintSpawnableComponent))
-class UECSLinker : public UActorComponent
+class DODSIMULATION_API UECSLinker : public UActorComponent
 {
 	GENERATED_BODY()
-
 public:
+
 	// Sets default values for this component's properties
 	UECSLinker();
 
@@ -87,18 +75,15 @@ protected:
 
 	void RegisterWithECS();
 	int32 EntityId = -1;
-	UPROPERTY(EditAnywhere, Category = "ECS")
-		ETransformSyncType TransformSync;
-	UPROPERTY(EditAnywhere, Category = "ECS")
-		FCopyTransformToActor CopyToActor;
-	UPROPERTY(EditAnywhere, Category = "ECS")
-		FCopyTransformToECS CopyToECS;
 	class AECSManager* ECSManager = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "ECS")
+		ETransformSyncType TransformSync = ETransformSyncType::BothWays;
 
 };
 
 UCLASS(ClassGroup = (ECS), meta = (BlueprintSpawnableComponent))
-class UDoorWrapper : public UActorComponent, public IComponentWrapper
+class DODSIMULATION_API UDoorWrapper : public UActorComponent, public IComponentWrapper
 {
 	GENERATED_BODY()
 
@@ -116,7 +101,7 @@ protected:
 };
 
 UCLASS(ClassGroup = (ECS), meta = (BlueprintSpawnableComponent))
-class UMoverWrapper : public UActorComponent, public IComponentWrapper
+class DODSIMULATION_API UMoverWrapper : public UActorComponent, public IComponentWrapper
 {
 	GENERATED_BODY()
 

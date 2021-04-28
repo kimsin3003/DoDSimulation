@@ -29,7 +29,6 @@ void AMover::BeginPlay()
 void AMover::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (!NeedUpdate) return;
 	UE_LOG(LogTemp, Log, TEXT("Log Message"));
 	const auto& location = GetActorLocation();
 	SetActorLocation(location + 100 * DeltaTime * FVector(FMath::RandRange(-1.0f, 1.0f), FMath::RandRange(-1.0f, 1.0f), FMath::RandRange(-1.0f, 1.0f)));

@@ -10,8 +10,6 @@ UCLASS()
 class DODSIMULATION_API AMover : public AActor
 {
 	GENERATED_BODY()
-		UPROPERTY(EditAnywhere)
-		bool NeedUpdate;
 
 public:	
 	// Sets default values for this component's properties

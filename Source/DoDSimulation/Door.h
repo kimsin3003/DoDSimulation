@@ -10,8 +10,6 @@ UCLASS()
 class DODSIMULATION_API ADoor : public AActor
 {
 	GENERATED_BODY()
-		UPROPERTY(EditAnywhere)
-		bool NeedUpdate;
 	
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

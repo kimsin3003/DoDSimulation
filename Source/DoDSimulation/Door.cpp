@@ -23,7 +23,6 @@ void ADoor::BeginPlay()
 void ADoor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (!NeedUpdate) return;
 	auto doorLocation = GetActorLocation();
 	_IsOpen = false;
 	for (const AMover* mover : TActorRange<AMover>(GetWorld()))
