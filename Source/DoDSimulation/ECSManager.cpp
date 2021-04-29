@@ -25,7 +25,7 @@ void AECSManager::BeginPlay()
 void AECSManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	//if (!NeedUpdate) return;
+	if (!bEnableTick) return;
 
 	for (auto& system : Systems)
 	{

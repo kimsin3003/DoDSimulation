@@ -90,13 +90,10 @@ class DODSIMULATION_API UDoorWrapper : public UActorComponent, public IComponent
 public:
 	// Sets default values for this component's properties
 	UDoorWrapper() { PrimaryComponentTick.bCanEverTick = false; };
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FDoorComp Value;
 protected:
 	void AddToEntity(Database* DB, int32 EntityId) final
 	{
-		DB->AddComp(EntityId, Value);
+		DB->AddComp(EntityId, FDoorComp());
 	}
 };
 

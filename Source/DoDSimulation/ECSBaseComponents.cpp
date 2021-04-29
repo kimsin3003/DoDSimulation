@@ -48,11 +48,11 @@ void UECSLinker::RegisterWithECS()
 
 	if (TransformSync == ETransformSyncType::Actor_To_ECS || TransformSync == ETransformSyncType::BothWays)
 	{
-		DB->AddComp(EntityId, CopyToECS);
+		DB->AddComp(EntityId, FCopyTransformToECS());
 	}
 	if (TransformSync == ETransformSyncType::ECS_To_Actor || TransformSync == ETransformSyncType::BothWays)
 	{
-		DB->AddComp(EntityId, CopyToActor);
+		DB->AddComp(EntityId, FCopyTransformToActor());
 	}
 
 	//request all other components to add their ECS component to this actor

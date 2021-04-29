@@ -11,11 +11,11 @@ UCLASS()
 class DODSIMULATION_API AECSManager : public AActor
 {
 	GENERATED_BODY()
-		UPROPERTY(EditAnywhere)
-		bool NeedUpdate;
 public:	
 	// Sets default values for this actor's properties
 	AECSManager();
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		bool bEnableTick;
 
 protected:
 	// Called when the game starts or when spawned

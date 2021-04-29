@@ -19,9 +19,6 @@ AMover::AMover()
 void AMover::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
-	
 }
 
 
@@ -29,8 +26,15 @@ void AMover::BeginPlay()
 void AMover::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	UE_LOG(LogTemp, Log, TEXT("Log Message"));
+	if (!bEnableTick) return;
 	const auto& location = GetActorLocation();
-	SetActorLocation(location + 100 * DeltaTime * FVector(FMath::RandRange(-1.0f, 1.0f), FMath::RandRange(-1.0f, 1.0f), FMath::RandRange(-1.0f, 1.0f)));
+	FVector NextPos = location + 
+		1000 * DeltaTime * 
+		FVector(
+			FMath::RandRange(-1.0f, 1.0f),
+			FMath::RandRange(-1.0f, 1.0f),
+			FMath::RandRange(-1.0f, 1.0f)
+		);
+	SetActorLocation(NextPos);
 }
 

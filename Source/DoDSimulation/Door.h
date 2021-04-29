@@ -14,6 +14,8 @@ class DODSIMULATION_API ADoor : public AActor
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		bool _IsOpen = false;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		bool bEnableTick;
 	// Sets default values for this component's properties
 	ADoor();
 

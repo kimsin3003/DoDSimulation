@@ -27,7 +27,7 @@ void TestSystem::Update(float deltaTime, const Scheduler& scheduler)
 	MoveMover.Each(*DB, [=](int32 EntityId, FMoverComp& _, const FActorReference& v, FActorTransform& Transform)
 	{
 		const auto& location = Transform.transform.GetLocation();
-		FVector NewPos = { location + 100 * deltaTime * FVector(FMath::RandRange(-1.0f, 1.0f), FMath::RandRange(-1.0f, 1.0f), FMath::RandRange(-1.0f, 1.0f)) };
+		FVector NewPos = { location + 1000 * deltaTime * FVector(FMath::RandRange(-1.0f, 1.0f), FMath::RandRange(-1.0f, 1.0f), FMath::RandRange(-1.0f, 1.0f)) };
 		Transform.transform.SetLocation(NewPos);
 		return true;
 	});

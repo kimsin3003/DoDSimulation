@@ -13,6 +13,8 @@ class DODSIMULATION_API AMover : public AActor
 
 public:	
 	// Sets default values for this component's properties
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		bool bEnableTick;
 	AMover();
 
 protected:
