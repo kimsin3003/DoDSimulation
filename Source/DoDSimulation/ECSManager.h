@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "ECS/Scheduler.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "ECSManager.generated.h"
@@ -25,7 +24,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	Scheduler Scheduler;
+	class Database* DB;
 private:
 	TArray<class SystemBase*> Systems;
 };

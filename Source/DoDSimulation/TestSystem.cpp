@@ -4,10 +4,8 @@
 #include "ECSBaseComponents.h"
 
 //#pragma optimize( "", off )
-void TestSystem::Update(float deltaTime, const Scheduler& scheduler)
+void TestSystem::Update(float deltaTime, Database* DB)
 {
-	Database* DB = scheduler.DB;
-
 	//Add FActorTransform to all entities(Actors for this case) with FCopyTransformToECS
 	Query<TExclude<FActorTransform>, FCopyTransformToECS> ToAddTransform;
 	ToAddTransform.Each(*DB, [=](int32 EntityId, FCopyTransformToECS& _)

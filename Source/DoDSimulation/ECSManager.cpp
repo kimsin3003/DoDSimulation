@@ -17,7 +17,7 @@ AECSManager::AECSManager()
 void AECSManager::BeginPlay()
 {
 	Super::BeginPlay();
-	Scheduler.DB = new Database();
+	DB = new Database();
 	Systems.Add(new TestSystem());
 }
 
@@ -29,7 +29,7 @@ void AECSManager::Tick(float DeltaTime)
 
 	for (auto& system : Systems)
 	{
-		system->Update(DeltaTime, Scheduler);
+		system->Update(DeltaTime, DB);
 	}
 }
 

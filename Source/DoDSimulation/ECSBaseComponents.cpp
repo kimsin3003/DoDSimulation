@@ -36,14 +36,14 @@ void UECSLinker::BeginPlay()
 	}
 	if (ECSManager)
 	{
-		EntityId = ECSManager->Scheduler.DB->CreateEntity();
+		EntityId = ECSManager->DB->CreateEntity();
 	}
 	RegisterWithECS();
 }
 
 void UECSLinker::RegisterWithECS()
 {
-	Database* DB = ECSManager->Scheduler.DB;
+	Database* DB = ECSManager->DB;
 	DB->AddComp(EntityId, FActorReference(GetOwner()));
 
 	if (TransformSync == ETransformSyncType::Actor_To_ECS || TransformSync == ETransformSyncType::BothWays)

@@ -4,7 +4,6 @@
 #include "Spawner.h"
 #include "Mover.h"
 #include "EngineUtils.h"
-#include "ECS/Scheduler.h"
 #include "ECS/Database.h"
 #include "ECS/Query.h"
 
