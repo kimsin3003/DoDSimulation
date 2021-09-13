@@ -140,8 +140,6 @@ public:
 		auto& Comps = GetPool<NewCompType>()->Comps;
 		check(Comps.Num() == EnitityIdToIndex[EntityId]);
 		Comps.Push(MoveTemp(Comp));
-		if (Comps.Num() != EntityIds.Num())
-			printf("asdf");
 	}
 	void MoveToSmaller(ArcheType* To, int32 EntityId);
 
